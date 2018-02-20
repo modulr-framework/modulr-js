@@ -2,7 +2,7 @@
 
 A web browser Javascript code dependency management, loosely based on [AMD JS API Specifications](https://github.com/amdjs/amdjs-api/wiki/AMD).
 
-Please see [Wiki](https://github.com/mitzerh/ModulR/wiki) for detailed documentation.
+Please see [Wiki](https://github.com/modulr-framework/modulr-js/wiki) for detailed documentation.
 
 **Latest Stabe/Release version `v1.3.0`:** [`modulr.js`](https://raw.githubusercontent.com/modulr-framework/modulr-js/master/js/modulr.js) | [`modulr.min.js`](https://raw.githubusercontent.com/modulr-framework/modulr-js/master/js/modulr.min.js) | [Release Notes](https://github.com/mitzerh/modulr-js/wiki/Release-Notes)
 
