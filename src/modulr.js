@@ -347,6 +347,19 @@ var Modulr = (function(window, app){
             };
 
             /**
+             * load script accessibility method
+             * @param  {[type]}   src      url of script to load
+             * @param  {Function} callback callback function
+             */
+            Proto.loadScript = function(src, callback) {
+                loadScript(src, null, function(){
+                    if (typeof callback === 'function') {
+                        callback();
+                    }
+                });
+            };
+
+            /**
              * load the module definitions waiting for
              * this instance to be configured
              */
