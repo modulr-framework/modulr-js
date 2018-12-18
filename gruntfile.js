@@ -6,7 +6,7 @@ module.exports = function(grunt) {
     // comment banner
     var comment = [
         '/**',
-        conf.name + ' v' + conf.version + ' | ' + grunt.template.today("yyyy-mm-dd"),
+        conf.name + '${varMode} v' + conf.version + ' | ' + grunt.template.today("yyyy-mm-dd"),
         conf.description,
         'by ' + conf.author,
         conf.license
@@ -33,7 +33,24 @@ module.exports = function(grunt) {
                 options: {
                     process: function (content, srcpath) {
                         content = content.replace('${version}', conf.version);
-                        content = [comment, content].join('\n\n');
+                        content = content.replace('//${returnValue}', 'return window.Modulr || app;');
+                        content = [comment.replace('${varMode}', ''), content].join('\n\n');
+                        return content;
+                    }
+
+                }
+
+            },
+
+            privateScope: {
+
+                src: 'src/modulr.js',
+                dest: 'js/modulr.scope.js',
+                options: {
+                    process: function (content, srcpath) {
+                        content = content.replace('${version}', conf.version);
+                        content = content.replace('//${returnValue}', 'return app;');
+                        content = [comment.replace('${varMode}', ' (private scope)'), content].join('\n\n');
                         return content;
                     }
 
@@ -79,12 +96,22 @@ module.exports = function(grunt) {
 
                 options: {
                     mangle: true,
-                    banner: comment + '\n'
+                    banner: comment.replace('${varMode}', '') + '\n'
                 },
                 files: {
                     'js/modulr.min.js' : 'js/modulr.js'
                 }
 
+            },
+
+            privateScope: {
+                options: {
+                    mangle: true,
+                    banner: comment.replace('${varMode}', ' (private scope)') + '\n'
+                },
+                files: {
+                    'js/modulr.scope.min.js' : 'js/modulr.scope.js'
+                }
             },
 
             includes: {
@@ -117,9 +144,11 @@ module.exports = function(grunt) {
             'uglify:includes',
             'jshint',
             'copy:dist',
+            'copy:privateScope',
             'copy:demo',
             'concat:demo',
             'uglify:dist',
+            'uglify:privateScope',
             'clean:temp'
         ];
     }

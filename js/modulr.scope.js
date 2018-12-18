@@ -1,5 +1,5 @@
 /**
-* modulr-js v2.0.2 | 2018-12-18
+* modulr-js (private scope) v2.0.2 | 2018-12-18
 * A Javascript Psuedo-AMD Browser Dependency Manager
 * by Helcon Mabesa
 * MIT
@@ -8,7 +8,7 @@
 var Modulr = (function(window, app){
 
     // do not override existing Modulr declaration
-    return window.Modulr || app;
+    return app;
 
 }(window,
 

@@ -1,7 +1,7 @@
 var Modulr = (function(window, app){
 
     // do not override existing Modulr declaration
-    return window.Modulr || app;
+    //${returnValue}
 
 }(window,
 
