@@ -1,5 +1,5 @@
 /**
-* modulr-js v2.1.0 | 2019-01-09
+* modulr-js v3.0.0 | 2019-01-09
 * A Javascript Psuedo-AMD Browser Dependency Manager
 * by Helcon Mabesa
 * MIT
@@ -91,7 +91,7 @@ var Modulr = (function(window, app){
             var Proto = this;
 
             // version
-            Proto.version = '2.1.0';
+            Proto.version = '3.0.0';
 
             /**
              * get current instance's config
