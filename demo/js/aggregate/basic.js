@@ -27,7 +27,7 @@ Modulr.define("basic:helper", [
                 console.log(args);
             }
         }
-    }
+    };
 
     return Helper;
 
@@ -35,14 +35,18 @@ Modulr.define("basic:helper", [
 ;Modulr.define("basic:main", [
     "require",
     "jquery",
-    "helper"
+    "helper",
+    'jquery.cookie'
 ], function(require, $){
 
     var Helper = require("helper"),
-        modules = Helper.getModules()
+        jc = require('jquery.cookie'),
+        modules = Helper.getModules(),
         link = '<a href="/js/basic/app/main.js">main</a>: ';
 
     Helper.status("modules length: " + modules.length, link);
+
+    console.log('jquery cookie function >>>>', jc);
 
     require([
         "modules/json",
@@ -81,14 +85,14 @@ Modulr.define("basic:helper", [
 
         // wow, they allow cross-domain calls! Understandable since it's for testing
         $.ajax({
-            url: url,
+            url: url
         }).done(function(data){
             callback(data);
         }).error(function(){
             callback(false);
         });
 
-    };
+    }
 
     // my 'defer' function
     function process(callback) {
@@ -170,7 +174,7 @@ Modulr.define("basic:helper", [
         baseDomain: domain,
 
         baseUrl: path + "/js/basic/app",
-        
+
         shim: {
             "jquery": {
                 src: "//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js",
@@ -183,7 +187,7 @@ Modulr.define("basic:helper", [
             }
         }
     });
-    
+
     basic.require(["main"]);
 
 }());

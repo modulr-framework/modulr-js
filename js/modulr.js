@@ -1,5 +1,5 @@
 /**
-* modulr-js v2.0.2 | 2018-12-18
+* modulr-js v2.1.0 | 2019-01-09
 * A Javascript Psuedo-AMD Browser Dependency Manager
 * by Helcon Mabesa
 * MIT
@@ -91,7 +91,7 @@ var Modulr = (function(window, app){
             var Proto = this;
 
             // version
-            Proto.version = '2.0.2';
+            Proto.version = '2.1.0';
 
             /**
              * get current instance's config
@@ -551,7 +551,7 @@ var Modulr = (function(window, app){
 
                         if (isExportsDefined(info.exports)) {
                             module.executed = true;
-                            module.factory = getShimExport(info.exports);
+                            module.factory = getShimExport(id, info.exports);
                             callback(module.factory);
                         } else if (SHIM_QUEUE[src]) {
                             SHIM_QUEUE[src].push(function(){
@@ -764,7 +764,7 @@ var Modulr = (function(window, app){
                         deps = info.deps || [];
 
                     Proto.define(id, deps, function(){
-                        return getShimExport(info.exports);
+                        return getShimExport(id, info.exports);
                     });
                 };
 
@@ -898,8 +898,33 @@ var Modulr = (function(window, app){
             }
 
             // shim export
-            function getShimExport(scope) {
-                 return window[scope.split('.')[0]];
+            function getShimExport(id, scope) {
+                var sp = scope.split('.'), res;
+
+                if (sp.length === 1) {
+                    res = window[scope];
+                } else {
+                    var tmp;
+                    for (var i = 0; i < sp.length; i++) {
+                        var prop = sp[i];
+                        if (i === 0 && typeof window[prop] !== 'undefined') {
+                            tmp = window[prop];
+                        } else if (tmp.hasOwnProperty(prop)) {
+                            tmp = tmp[prop];
+                        }
+                        if (typeof tmp === 'undefined') {
+                            break;
+                        }
+                    }
+                    if (typeof tmp !== 'undefined') {
+                        res = tmp;
+                    } else {
+                        res = undefined;
+                        throwError('exports not defined ('+id+'):', scope);
+                    }
+                }
+                return res;
+                //return window[scope.split('.')[0]];
             }
 
             /**
