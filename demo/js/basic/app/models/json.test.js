@@ -26,14 +26,14 @@ Modulr.define("basic:models/json.test", [
 
         // wow, they allow cross-domain calls! Understandable since it's for testing
         $.ajax({
-            url: url,
+            url: url
         }).done(function(data){
             callback(data);
         }).error(function(){
             callback(false);
         });
 
-    };
+    }
 
     // my 'defer' function
     function process(callback) {

@@ -27,7 +27,7 @@ Modulr.define("basic:helper", [
                 console.log(args);
             }
         }
-    }
+    };
 
     return Helper;
 

@@ -1,14 +1,18 @@
 Modulr.define("basic:main", [
     "require",
     "jquery",
-    "helper"
+    "helper",
+    'jquery.cookie'
 ], function(require, $){
 
     var Helper = require("helper"),
-        modules = Helper.getModules()
+        jc = require('jquery.cookie'),
+        modules = Helper.getModules(),
         link = '<a href="/js/basic/app/main.js">main</a>: ';
 
     Helper.status("modules length: " + modules.length, link);
+
+    console.log('jquery cookie function >>>>', jc);
 
     require([
         "modules/json",

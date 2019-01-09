@@ -11,7 +11,7 @@
         baseDomain: domain,
 
         baseUrl: path + "/js/basic/app",
-        
+
         shim: {
             "jquery": {
                 src: "//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js",
@@ -24,7 +24,7 @@
             }
         }
     });
-    
+
     basic.require(["main"]);
 
 }());
