@@ -1,5 +1,5 @@
 /**
-* modulr-js (private scope) v2.0.2 | 2018-12-18
+* modulr-js (private scope) v2.0.3 | 2019-01-11
 * A Javascript Psuedo-AMD Browser Dependency Manager
 * by Helcon Mabesa
 * MIT
@@ -91,7 +91,7 @@ var Modulr = (function(window, app){
             var Proto = this;
 
             // version
-            Proto.version = '2.0.2';
+            Proto.version = '2.0.3';
 
             /**
              * get current instance's config
@@ -190,6 +190,7 @@ var Modulr = (function(window, app){
              * execute a factory function
              */
             Proto.require = function(deps, callback) {
+
                 // if deps is string, it's called from a factory
                 if (typeof deps === 'string') {
                     return getDefinedModule(deps);
@@ -424,7 +425,14 @@ var Modulr = (function(window, app){
                 loadMasterFile(function(){
                     // load other modulr packages
                     loadPackages(CONFIG.packages, function(){
-                        isReady();
+                        // run preprocessing
+                        if (typeof CONFIG.preProcess === 'function') {
+                            CONFIG.preProcess(MODULR_STACK[CONTEXT].instance, function(){
+                                isReady();
+                            });
+                        } else {
+                            isReady();
+                        }
                     });
                 });
 
