@@ -189,7 +189,7 @@ var Modulr = (function(window, app){
                     return getDefinedModule(deps);
                 } else if (isArray(deps)) {
 
-                    return new UtilPromise(function(resolve){
+                    return new Promise(function(resolve){
                         var getDeps = function() {
                             // get dependencies
                             MODULE.get(null, deps, function(args){
@@ -483,67 +483,77 @@ var Modulr = (function(window, app){
                             arr = cloneArr(STACK[moduleId].deps);
                         }
 
-                        var getDeps = function() {
-                            if (arr.length === 0) {
-                                callback(args);
-                            } else {
-                                var id = processDepsPath(arr.shift()),
-                                    module = getStack(id),
-                                    ext = isExtendedInstance(id);
+                        if (arr.length === 0) { return callback([]); }
 
-                                if (ext) { // if extended calls (calls to other packages/instances)
-                                    if (ext.type === 'module') {
-                                        // extended modules are existing contexts
-                                        getExtendedModule(id, function(extFactory){
-                                            args.push((typeof extFactory !== 'undefined') ? extFactory : null);
-                                            getDeps();
-                                        });
-                                    } else if (ext.type === 'instance') { // if calling for the instance
-                                        args.push(getExtendedInstance(ext.context));
-                                        getDeps();
-                                    }
-                                } else if (id === 'require') {
-                                    args.push(Proto.require);
-                                    getDeps();
-                                } else if (id === 'define') {
-                                    args.push(Proto.define);
-                                    getDeps();
-                                } else if (id === 'exports') {
-                                    args.push(STACK[moduleId].exports);
-                                    getDeps();
-                                } else if (module  && !isShimModuleId(id)) { // module, but not a shim-defined module
-                                    if (module.executed) {
-                                        args.push(self.getModuleFactory(module));
-                                        getDeps();
-                                    } else {
-                                        self.execModule(null, null, id, function(factory){
-                                            args.push(factory);
-                                            getDeps();
-                                        });
-                                    }
-                                } else if (isShimModuleId(id)) { // shim module definition
-                                    var shimInfo = CONFIG.shim[id];
+                        var PromiseArr = (function(){
 
-                                    self.loadShim(id, shimInfo, function(factory){
-                                        args.push(factory);
-                                        getDeps();
-                                    });
+                            var res = [];
 
-                                } else { // might be an external script..
-                                    // try to load external script
-                                    var src = self.getModulePath(id);
-
-                                    loadScript(src, id, function(){
-                                        self.execModule('load', src, id, function(factory){
-                                            args.push(factory);
-                                            getDeps();
-                                        });
-                                    });
-                                }
+                            for (var i = 0; i < arr.length; i++) {
+                                res.push(set(arr[i]));
                             }
-                        };
 
-                        getDeps();
+                            function set(rawVal) {
+
+                                return new Promise(function(presolve){
+
+                                    var id = processDepsPath(rawVal),
+                                        module = getStack(id),
+                                        ext = isExtendedInstance(id);
+
+                                    if (ext) { // if extended calls (calls to other packages/instances)
+                                        if (ext.type === 'module') {
+                                            // extended modules are existing contexts
+                                            getExtendedModule(id, function(extFactory){
+                                                presolve((typeof extFactory !== 'undefined') ? extFactory : null);
+                                            });
+                                        } else if (ext.type === 'instance') { // if calling for the instance
+                                            presolve(getExtendedInstance(ext.context));
+                                        }
+                                    } else if (id === 'require') {
+                                        presolve(Proto.require);
+                                    } else if (id === 'define') {
+                                        presolve(Proto.define);
+                                    } else if (id === 'exports') {
+                                        presolve(STACK[moduleId].exports);
+                                    } else if (module  && !isShimModuleId(id)) { // module, but not a shim-defined module
+                                        if (module.executed) {
+                                            presolve(self.getModuleFactory(module));
+                                        } else {
+                                            self.execModule(null, null, id, function(factory){
+                                                presolve(factory);
+                                            });
+                                        }
+                                    } else if (isShimModuleId(id)) { // shim module definition
+                                        var shimInfo = CONFIG.shim[id];
+
+                                        self.loadShim(id, shimInfo, function(factory){
+                                            presolve(factory);
+                                        });
+
+                                    } else { // might be an external script..
+                                        // try to load external script
+                                        var src = self.getModulePath(id);
+
+                                        loadScript(src, id, function(){
+                                            self.execModule('load', src, id, function(factory){
+                                                presolve(factory);
+                                            });
+                                        });
+                                    }
+
+                                });
+
+                            }
+
+                            return res;
+
+                        })();
+
+                        Promise.all(PromiseArr).then(function(args){
+                            callback(args);
+                        });
+                        
                     };
 
                     self.loadShim = function(id, info, callback) {
@@ -1221,41 +1231,6 @@ var Modulr = (function(window, app){
             var args = Array.prototype.slice.call(arguments);
             args.unshift(LOG_PREFIX);
             throw new Error(args.join(' '));
-        }
-
-        function UtilPromise(sender) {
-
-            var Proto = this,
-                _resolve = [],
-                _reject = null;
-
-            Proto.then = Proto.resolve = function(cb){
-                if (typeof cb === 'function') {
-                    _resolve.push(cb);
-                }
-                return this;
-            };
-
-            Proto.reject = function(cb) {
-                if (typeof cb === 'function') {
-                    _reject = cb;
-                }
-            };
-
-            sender(function(){
-                if (_resolve) {
-                    var args = Array.prototype.slice.call(arguments);
-                    while (_resolve.length > 0) {
-                        var fn = _resolve.shift();
-                        data = fn.apply(fn, args);
-                    }
-                }
-            }, function(data){
-                if (_reject) {
-                    var args = Array.prototype.slice.call(arguments);
-                    _reject.apply(_reject, args);
-                }
-            });
         }
 
         function OnReady(done) {
