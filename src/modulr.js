@@ -183,6 +183,7 @@ var Modulr = (function(window, app){
              * execute a factory function
              */
             Proto.require = function(deps, callback) {
+
                 // if deps is string, it's called from a factory
                 if (typeof deps === 'string') {
                     return getDefinedModule(deps);
@@ -417,7 +418,14 @@ var Modulr = (function(window, app){
                 loadMasterFile(function(){
                     // load other modulr packages
                     loadPackages(CONFIG.packages, function(){
-                        isReady();
+                        // run preprocessing
+                        if (typeof CONFIG.preProcess === 'function') {
+                            CONFIG.preProcess(MODULR_STACK[CONTEXT].instance, function(){
+                                isReady();
+                            });
+                        } else {
+                            isReady();
+                        }
                     });
                 });
 
