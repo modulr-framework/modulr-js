@@ -13,6 +13,7 @@
     "matchdep": "~0.3.0"
   },
   "scripts": {
+    "build": "grunt",
     "demo": "node ./demo.js"
   },
   "repository": {

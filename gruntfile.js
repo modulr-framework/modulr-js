@@ -74,6 +74,18 @@ module.exports = function(grunt) {
                     separator: ';'
                 },
                 files: grunt.file.readJSON('demo/build.json')
+            },
+
+            polyfill: {
+                options: {
+                    separator: ';\n\n/**  polyfill **/\n'
+                },
+                files: {
+                    'js/modulr.polyfill.min.js': [
+                        'js/modulr.min.js',
+                        'src/promise.polyfill.js'
+                    ]
+                }
             }
 
         },
@@ -149,6 +161,7 @@ module.exports = function(grunt) {
             'concat:demo',
             'uglify:dist',
             'uglify:privateScope',
+            'concat:polyfill',
             'clean:temp'
         ];
     }

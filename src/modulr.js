@@ -553,7 +553,7 @@ var Modulr = (function(window, app){
                         Promise.all(PromiseArr).then(function(args){
                             callback(args);
                         });
-                        
+
                     };
 
                     self.loadShim = function(id, info, callback) {

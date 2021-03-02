@@ -1,5 +1,5 @@
 /**
-* modulr-js v3.0.0 | 2021-02-25
+* modulr-js v3.0.0 | 2021-03-02
 * A Javascript Psuedo-AMD Browser Dependency Manager
 * by Helcon Mabesa
 * MIT
@@ -560,7 +560,7 @@ var Modulr = (function(window, app){
                         Promise.all(PromiseArr).then(function(args){
                             callback(args);
                         });
-                        
+
                     };
 
                     self.loadShim = function(id, info, callback) {
